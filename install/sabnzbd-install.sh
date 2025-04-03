@@ -14,7 +14,11 @@ network_check
 update_os
 
 msg_info "Installing Dependencies"
-$STD apt-get install -y par2
+PAR2RELEASE=$(curl -s https://api.github.com/repos/animetosho/par2cmdline-turbo/releases/latest | grep "tag_name" | awk '{print substr($2, 2, length($2)-3) }')
+curl -fsSLO https://github.com/animetosho/par2cmdline-turbo/releases/download/$PAR2RELEASE/par2cmdline-turbo-$PAR2RELEASE-linux-amd64.xz
+xz -qdv par2cmdline-turbo-$PAR2RELEASE-linux-amd64.xz
+chmod +x par2cmdline-turbo-$PAR2RELEASE-linux-amd64
+mv par2cmdline-turbo-$PAR2RELEASE-linux-amd64 /usr/bin/par2
 $STD apt-get install -y p7zip-full
 cat <<EOF >/etc/apt/sources.list.d/non-free.list
 deb http://deb.debian.org/debian bookworm main contrib non-free non-free-firmware
@@ -55,15 +59,6 @@ User=root
 WantedBy=multi-user.target" >$service_path
 systemctl enable --now -q sabnzbd.service
 msg_ok "Created Service"
-
-msg_info "Installing par2cmdline-turbo"
-$STD apt-get remove par2 -y
-PAR2RELEASE=$(curl -s https://api.github.com/repos/animetosho/par2cmdline-turbo/releases/latest | grep "tag_name" | awk '{print substr($2, 2, length($2)-3) }')
-curl -fsSLO https://github.com/animetosho/par2cmdline-turbo/releases/download/$PAR2RELEASE/par2cmdline-turbo-$PAR2RELEASE-linux-amd64.xz
-$STD xz -dv par2cmdline-turbo-$PAR2RELEASE-linux-amd64.xz
-chmod +x par2cmdline-turbo-$PAR2RELEASE-linux-amd64
-mv par2cmdline-turbo-$PAR2RELEASE-linux-amd64 /usr/bin/par2
-msg_ok "Installed par2cmdline-turbo"
 
 motd_ssh
 customize
