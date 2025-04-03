@@ -42,6 +42,17 @@ function update_script() {
    else
       msg_ok "No update required. ${APP} is already at ${RELEASE}"
    fi
+   PAR2RELEASE=$(curl -fsSL https://api.github.com/repos/animetosho/par2cmdline-turbo/releases/latest | grep "tag_name" | awk '{print substr($2, 2, length($2)-3) }')
+   if [[ ! -f /usr/bin/par2 ]] || [[ $(par2 --version) != "par2cmdline-turbo version ${PAR2RELEASE:1}" ]]; then
+      msg_info "Updating par2cmdline-turbo to ${PAR2RELEASE}"
+      curl -fsSLO https://github.com/animetosho/par2cmdline-turbo/releases/download/$PAR2RELEASE/par2cmdline-turbo-$PAR2RELEASE-linux-amd64.xz
+      $STD xz -dv par2cmdline-turbo-$PAR2RELEASE-linux-amd64.xz
+      chmod +x par2cmdline-turbo-$PAR2RELEASE-linux-amd64
+      mv par2cmdline-turbo-$PAR2RELEASE-linux-amd64 /usr/bin/par2
+      msg_ok "Updated par2cmdline-turbo to ${PAR2RELEASE}"
+   else
+      msg_ok "No update required. par2cmdline-turbo is already at ${PAR2RELEASE}"
+   fi
    exit
 }
 
